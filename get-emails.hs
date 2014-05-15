@@ -29,13 +29,13 @@ import Data.Function
 import Data.List.Split
 import Data.List hiding (lookup)
 import Data.Maybe
-import Data.Map hiding (map, null)
+import Data.Map hiding (map, null, mapMaybe)
 import Prelude hiding (lookup)
 import Control.Applicative
 
 main = do
   [emailFile, inviteFile, outputFile] <- getArgs
-  emails <- readFile mailFile
+  emails <- readFile emailFile
   invites <- readFile inviteFile
   mapM (interactMail outputFile (pairMap emails)) $ lines invites
 
@@ -64,8 +64,8 @@ pairMap = fromListWith (++) . map (mapSnd (:[])) . mapMaybe getPair . lines
 
 getPair :: String -> Maybe (String, String)
 getPair str
-    | numEntries == 2 = Just (map toLower name, entries email)
+    | numEntries == 2 = Just (map toLower name, email)
     | otherwise = Nothing
     where
-      [name, email] = splitOn ":" str
+      entries@[name, email] = splitOn ":" str
       numEntries = length entries
