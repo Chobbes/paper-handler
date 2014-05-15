@@ -35,7 +35,7 @@ import Control.Applicative
 
 main = do
   [emailFile, inviteFile, outputFile] <- getArgs
-  emails <- readFilee mailFile
+  emails <- readFile mailFile
   invites <- readFile inviteFile
   mapM (interactMail outputFile (pairMap emails)) $ lines invites
 
