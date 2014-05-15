@@ -34,10 +34,10 @@ import Prelude hiding (lookup)
 import Control.Applicative
 
 main = do
-  args <- getArgs
-  emails <- readFile $ args !! 0
-  invites <- readFile $ args !! 1
-  sequence . map (interactMail (args !! 2) (pairMap emails)) $ lines invites
+  [emailFile, inviteFile, outputFile] <- getArgs
+  emails <- readFile $ emailFile
+  invites <- readFile $ inviteFile
+  sequence . map (interactMail outputFile (pairMap emails)) $ lines invites
 
 interactMail filePath addresses nameLine
     | null mailPairs = putStrLn $ "Not found: " ++ nameLine
