@@ -35,19 +35,19 @@ import Control.Applicative
 
 main = do
   [emailFile, inviteFile, outputFile] <- getArgs
-  emails <- readFile $ emailFile
-  invites <- readFile $ inviteFile
-  sequence . map (interactMail outputFile (pairMap emails)) $ lines invites
+  emails <- readFilee mailFile
+  invites <- readFile inviteFile
+  mapM (interactMail outputFile (pairMap emails)) $ lines invites
 
 interactMail filePath addresses nameLine
     | null mailPairs = putStrLn $ "Not found: " ++ nameLine
     | length mailPairs == 1 = putStrLn ("Found: " ++ nameLine) >>
-                              appendFile filePath ((head mailPairs) ++ "\n")
+                              appendFile filePath (head mailPairs ++ "\n")
     | otherwise = do putStrLn ("\nChoices: " ++ nameLine ++ "\n" ++ choices)
                      choice <- getLine
-                     appendFile filePath ((mailPairs !! (read choice)) ++ "\n")
+                     appendFile filePath ((mailPairs !! read choice) ++ "\n")
     where
-      choices = unlines $ zipWith (\x y -> (show x) ++ ": " ++ y) [0..] mailPairs
+      choices = unlines $ zipWith (\x y -> show x ++ ": " ++ y) [0..] mailPairs
       name = (head . words) nameLine
       mailPairs = mailLookup addresses name
 
@@ -58,14 +58,14 @@ mailLookup addresses name = map ((upperName ++ ":") ++) <$> fromMaybe [] $ looku
       upperName = toUpper (head name) : tail name
 
 pairMap :: String -> Map String [String]
-pairMap = fromListWith (++) . map (mapSnd (:[])) . catMaybes . map getPair . lines
+pairMap = fromListWith (++) . map (mapSnd (:[])) . mapMaybe getPair . lines
     where
       mapSnd f (x, y) = (x, f y)
 
 getPair :: String -> Maybe (String, String)
 getPair str
-    | numEntries == 2 = Just (map toLower $ entries !! 0, entries !! 1)
+    | numEntries == 2 = Just (map toLower name, entries email)
     | otherwise = Nothing
     where
-      entries = splitOn ":" str
+      [name, email] = splitOn ":" str
       numEntries = length entries
