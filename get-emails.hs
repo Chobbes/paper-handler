@@ -67,5 +67,6 @@ getPair str
     | numEntries == 2 = Just (map toLower name, email)
     | otherwise = Nothing
     where
-      entries@[name, email] = splitOn ":" str
+      [name, email] = entries
+      entries = splitOn ":" str
       numEntries = length entries
